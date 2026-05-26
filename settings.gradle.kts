@@ -1,0 +1,3 @@
+rootProject.name = "taller_3"
+include("01.embeddings")
+include("02.langchain4j")
