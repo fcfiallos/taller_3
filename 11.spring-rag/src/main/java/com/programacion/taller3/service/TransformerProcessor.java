@@ -12,7 +12,7 @@ public class TransformerProcessor {
         TokenTextSplitter splitter = TokenTextSplitter.builder().build();
         List<Document> splitted = splitter.split(documents);
 
-        System.out.println("FileProcessor::Documentos creados: " + documents.size());
+        System.out.println("TransformersProcessor::Documentos creados: " + documents.size());
 //        System.out.println("Pagina 0");
 //        System.out.println(documents.get(15));
 

@@ -22,7 +22,7 @@ public class EmbeddingProcessor {
         System.out.println(embeddingModel);
         System.out.println(vectorStore);
 
-//        vectorStore.add(documents);
+      //  vectorStore.add(documents);
 
 
     }

@@ -29,7 +29,7 @@ dependencies {
     implementation("org.springframework.ai:spring-ai-tika-document-reader")
 
     //embeddings
-    implementation("org.springframework.ai:spring-ai-starter-model-transformers")
+  //  implementation("org.springframework.ai:spring-ai-starter-model-transformers")
 
     // vector store
     implementation("org.springframework.ai:spring-ai-starter-vector-store-qdrant")
@@ -37,6 +37,11 @@ dependencies {
     // camel -- EIPS
     implementation("org.apache.camel.springboot:camel-spring-boot-starter:4.20.0")
     implementation("org.apache.camel.springboot:camel-file-starter:4.20.0")
+
+    //--Docker compose
+    runtimeOnly("org.springframework.boot:spring-boot-docker-compose")
+
+   // implementation("com.microsoft.onnxruntime:onnxruntime_gpu:1.26.0")
 
 
 }
