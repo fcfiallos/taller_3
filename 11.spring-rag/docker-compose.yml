@@ -8,3 +8,6 @@ services:
     volumes:
       - /tools/distri/qdrant_storage:/qdrant/storage
 #        para que sea persistente la bd sino se pierde
+
+volumes:
+  qdrant_data:

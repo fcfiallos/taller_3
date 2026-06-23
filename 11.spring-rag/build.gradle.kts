@@ -29,7 +29,7 @@ dependencies {
     implementation("org.springframework.ai:spring-ai-tika-document-reader")
 
     //embeddings
-  //  implementation("org.springframework.ai:spring-ai-starter-model-transformers")
+    implementation("org.springframework.ai:spring-ai-starter-model-transformers")
 
     // vector store
     implementation("org.springframework.ai:spring-ai-starter-vector-store-qdrant")
@@ -41,8 +41,7 @@ dependencies {
     //--Docker compose
     runtimeOnly("org.springframework.boot:spring-boot-docker-compose")
 
-   // implementation("com.microsoft.onnxruntime:onnxruntime_gpu:1.26.0")
-
+    // implementation("com.microsoft.onnxruntime:onnxruntime_gpu:1.26.0")
 
 }
 
@@ -51,4 +50,8 @@ dependencyManagement {
     imports {
         mavenBom("org.springframework.ai:spring-ai-bom:${property("springAiVersion")}")
     }
+}
+
+configurations.all {
+    exclude(group = "ai.djl.pytorch")
 }

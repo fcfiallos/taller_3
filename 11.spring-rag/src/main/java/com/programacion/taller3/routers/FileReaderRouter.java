@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class FileReaderRouter extends RouteBuilder {
 
     // Apunta de forma absoluta a la carpeta de tu captura usando barras inclinadas /
-    @Value("${app.files.inbound:C:/tools/distri}")
+    @Value("${app.files.inbound:C:/tools/distri/taller_3_embedding/11.spring-rag}")
     String inboundPath;
 
     @Override
