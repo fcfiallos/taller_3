@@ -2,6 +2,7 @@ package com.programacion.taller3.service;
 
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
+import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -11,13 +12,14 @@ import java.util.List;
 
 @Component
 public class FileProcessor {
-    public List<Document> procesar (File file){
+    public List<Document> procesar(File file) {
         Resource resource = new FileSystemResource(file);
-        PagePdfDocumentReader reader = new PagePdfDocumentReader(resource);
+//        PagePdfDocumentReader reader = new PagePdfDocumentReader(resource);
+        TikaDocumentReader reader = new TikaDocumentReader(resource);
 
         List<Document> documents = reader.get();
 
-        System.out.println("Documentos creados: "+ documents.size());
+        System.out.println("Documentos creados: " + documents.size());
 //        System.out.println("Pagina 0");
 //
 //        System.out.println(documents.get(15));

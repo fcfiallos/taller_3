@@ -33,6 +33,7 @@ dependencies {
 
     // vector store
     implementation("org.springframework.ai:spring-ai-starter-vector-store-qdrant")
+    implementation("org.springframework.ai:spring-ai-vector-store-advisor")
 
     // camel -- EIPS
     implementation("org.apache.camel.springboot:camel-spring-boot-starter:4.20.0")

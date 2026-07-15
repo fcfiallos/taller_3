@@ -6,7 +6,7 @@ services:
       - '6333:6333'
       - '6334:6334'
     volumes:
-      - /tools/distri/qdrant_storage:/qdrant/storage
+      - /decimo/tools/qdrant_storage:/qdrant/storage
 #        para que sea persistente la bd sino se pierde
 
 volumes:

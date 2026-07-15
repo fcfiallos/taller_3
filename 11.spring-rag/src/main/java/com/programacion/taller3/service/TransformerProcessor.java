@@ -9,7 +9,7 @@ import java.util.List;
 @Component
 public class TransformerProcessor {
     public List<Document> procesar(List<Document> documents) {
-        TokenTextSplitter splitter = TokenTextSplitter.builder().build();
+        TokenTextSplitter splitter = TokenTextSplitter.builder().withChunkSize(200).build();
         List<Document> splitted = splitter.split(documents);
 
         System.out.println("TransformersProcessor::Documentos creados: " + documents.size());
