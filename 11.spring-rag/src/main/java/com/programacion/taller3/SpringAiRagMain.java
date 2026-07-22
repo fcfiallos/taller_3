@@ -9,3 +9,4 @@ public class SpringAiRagMain {
         SpringApplication.run(SpringAiRagMain.class, args);
     }
 }
+

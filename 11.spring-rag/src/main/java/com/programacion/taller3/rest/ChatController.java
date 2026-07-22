@@ -3,10 +3,13 @@ package com.programacion.taller3.rest;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
+import org.springframework.ai.chat.client.advisor.vectorstore.VectorStoreChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -30,9 +33,11 @@ public class ChatController {
     @Autowired
     VectorStore vectorStore;
 
-//    @Value("classpath:/prompts/userPrompt.st")
-//    Resource userPrompt;
+    @Autowired
+    @Qualifier("chatMemoryVectorStore")
+    VectorStore chatMemoryVectorStore; // coleccion "chat-memory": historial de conversacion
 
+    private static final String DEFAULT_CONVERSATION_ID = "default";
 
     public ChatController(ChatClient.Builder builder) {
         chatClient = builder
@@ -57,21 +62,6 @@ public class ChatController {
                 .trim();
 
     }
-//
-//    @PostMapping(value = "/chat", consumes = "application/json", produces = "text/plain")
-//    public String chat(@RequestBody ChatRequest request) {
-//        return chatClient.prompt()
-//                .system(systemSpec -> systemSpec
-//                                .text(systemPrompt)
-//                        //.param()
-//                )
-////                .user(userSpec -> userSpec
-////                        .text(userPrompt)
-////                        .param("question", request.message())
-////                )
-//                .call()
-//                .content();
-//    }
 
     @PostMapping(path = "/api/chat", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> chatStream(@RequestBody ChatRequest request) {
@@ -81,13 +71,11 @@ public class ChatController {
         if (message == null || message.isBlank()) {
             throw new IllegalArgumentException("El mensaje no puede estar vacio");
         }
-
-        //convertir la pregunta a vector
-        //buscar la base vectorial
         String contexto = searchDocument(message);
-        //poner el contexto en el promp del sistema
+        var conversationId = (request.conversationId() == null || request.conversationId().isBlank())
+                ? DEFAULT_CONVERSATION_ID
+                : request.conversationId();
 
-//esto ya es con un Advisor
         var qaAdvisor = QuestionAnswerAdvisor.builder(vectorStore)
                 .searchRequest(
                         SearchRequest.builder()
@@ -98,13 +86,19 @@ public class ChatController {
                 .build();
 
 
+        var memoryAdvisor = VectorStoreChatMemoryAdvisor.builder(chatMemoryVectorStore)
+                .defaultTopK(5)
+                .build();
+
+
         Flux<ServerSentEvent<String>> tokens = chatClient.prompt()
                 /*  .system(systemSpec -> systemSpec
                           .text(systemPrompt)
                           .param("normativa", contexto)
                   )*/
                 .user(message)
-                .advisors(qaAdvisor)
+                .advisors(memoryAdvisor, qaAdvisor)
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
                 .stream()
                 .content()
                 .map(chunk -> ServerSentEvent.<String>builder(chunk)
@@ -131,4 +125,3 @@ public class ChatController {
                 ));
 
     }}
-

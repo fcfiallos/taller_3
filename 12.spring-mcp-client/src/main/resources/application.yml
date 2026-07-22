@@ -2,8 +2,9 @@ server:
   port: 8090
 
 app:
-
+  key: ${GROQ_KEY}
   aimodel: llama-3.1-8b-instant
+  #url: http://localhost:8080/v1
   url: https://api.groq.com/openai/v1
 
 spring:

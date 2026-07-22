@@ -8,8 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class FileReaderRouter extends RouteBuilder {
 
-    // Apunta de forma absoluta a la carpeta de tu captura usando barras inclinadas /
-    @Value("${app.files.inbound:E:/decimo/taller_3/11.spring-rag/procesados}")
+    @Value("${app.files.inbound:E:/decimo/taller_3/11.spring-rag}")
     String inboundPath;
 
     @Override
@@ -25,4 +24,6 @@ public class FileReaderRouter extends RouteBuilder {
 
     }
 }
+
+
 
