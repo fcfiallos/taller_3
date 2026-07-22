@@ -16,6 +16,8 @@
             <option value="$PROJECT_DIR$/12.spring-mcp-client" />
             <option value="$PROJECT_DIR$/13.spring-mcp-server-stdio" />
             <option value="$PROJECT_DIR$/14.spring-mcp-server-http" />
+            <option value="$PROJECT_DIR$/15.spring-memoria" />
+            <option value="$PROJECT_DIR$/16.sprong-correccion" />
           </set>
         </option>
       </GradleProjectSettings>

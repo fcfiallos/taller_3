@@ -1,0 +1,35 @@
+server:
+  port: 8090
+app:
+  key: ${GROQ_KEY}
+  aimodel: llama-3.1-8b-instant
+  #url: http://localhost:8080/v1
+  url: https://api.groq.com/openai/v1
+
+spring:
+  docker:
+    compose:
+      enabled: true
+      file: 11.spring-rag/docker-compose.yml
+  ai:
+    model:
+      embedding: transformers
+    embedding:
+      transformer:
+        onnx:
+          model-uri: classpath:models/model.onnx
+        tokenizer:
+          uri: classpath:models/tokenizer.json
+    vectorstore:
+      qdrant:
+        collection-name: springai
+        initialize-schema: true
+    openai:
+      api-key: ${app.key}
+      base-url: ${app.url}
+      chat:
+        model: ${app.aimodel}
+
+logging:
+  level:
+    org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: DEBUG

@@ -33,22 +33,15 @@ public class ChatController {
     @Autowired
     VectorStore vectorStore;
 
-    @Autowired
-    @Qualifier("chatMemoryVectorStore")
-    VectorStore chatMemoryVectorStore; // coleccion "chat-memory": historial de conversacion
-
-    private static final String DEFAULT_CONVERSATION_ID = "default";
-
     public ChatController(ChatClient.Builder builder) {
         chatClient = builder
                 .defaultAdvisors(
-                        //imprimir LOG particiones
                         new SimpleLoggerAdvisor()
                 )
                 .build();
     }
 
-    private String searchDocument(String query) {
+    private String searchDocuments(String query) {
         var request = SearchRequest.builder()
                 .query(query)
                 .topK(3)
@@ -62,19 +55,32 @@ public class ChatController {
                 .trim();
 
     }
+@PostMapping(value = "/chat", consumes = "application/json", produces = "text/plain")
+    public String chat(@RequestBody ChatRequest request) {
+        return chatClient.prompt()
+                .system(systemSpec -> systemSpec
+                        .text(systemPrompt))
+                //.param
+                .user(userSpec -> userSpec.text(request.message())
+                        .param("question", request.message()))
+                .call()
+                .content();
+    }
 
-    @PostMapping(path = "/api/chat", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<String>> chatStream(@RequestBody ChatRequest request) {
+    @PostMapping(path = "/api/chat", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
+            MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<String>> streamChat(@RequestBody ChatRequest request) {
 
         var message = request.message();
-
         if (message == null || message.isBlank()) {
             throw new IllegalArgumentException("El mensaje no puede estar vacio");
         }
-        String contexto = searchDocument(message);
-        var conversationId = (request.conversationId() == null || request.conversationId().isBlank())
-                ? DEFAULT_CONVERSATION_ID
-                : request.conversationId();
+
+        //convertir la pregunta a VECTOR
+        //buscar en la base vectorial
+        //poner el contexto en el prompt del System
+
+        String contexto = searchDocuments(message);
 
         var qaAdvisor = QuestionAnswerAdvisor.builder(vectorStore)
                 .searchRequest(
@@ -85,20 +91,9 @@ public class ChatController {
                 )
                 .build();
 
-
-        var memoryAdvisor = VectorStoreChatMemoryAdvisor.builder(chatMemoryVectorStore)
-                .defaultTopK(5)
-                .build();
-
-
         Flux<ServerSentEvent<String>> tokens = chatClient.prompt()
-                /*  .system(systemSpec -> systemSpec
-                          .text(systemPrompt)
-                          .param("normativa", contexto)
-                  )*/
                 .user(message)
-                .advisors(memoryAdvisor, qaAdvisor)
-                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
+                .advisors(qaAdvisor)
                 .stream()
                 .content()
                 .map(chunk -> ServerSentEvent.<String>builder(chunk)
@@ -109,19 +104,13 @@ public class ChatController {
                         .build()
                 );
 
-        Flux<ServerSentEvent<String >> done = Flux.just(
+        Flux<ServerSentEvent<String>> done = Flux.just(
                 ServerSentEvent.<String>builder()
-                        .event("done")
+                        .event("donde")
                         .data("[DONE]")
                         .build()
         );
+        return tokens.concatWith(done);
+    }
 
-        return tokens.concatWith(done)
-                .onErrorResume(error -> Flux.just(
-                        ServerSentEvent.<String>builder()
-                                .event("error")
-                                .data(error.getMessage())
-                                .build()
-                ));
-
-    }}
+}
