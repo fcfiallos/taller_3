@@ -1,0 +1,12 @@
+{
+  "mcpServer": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:/uce/documentos"]
+    },
+    "examen-rag-tools": {
+      "command": "java",
+      "args": ["-jar", "C:/uce/examen-rag-mcp-server/build/libs/examen-rag-mcp-server-0.0.1-SNAPSHOT.jar"]
+    }
+  }
+}

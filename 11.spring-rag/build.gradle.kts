@@ -59,4 +59,6 @@ configurations.all {
     exclude(group = "ai.djl.pytorch")
 }
 
-//llama-server --model c:/tools/llama-models/gemma-4-E4B-it-Q4_K_S.gguf
+// llama-server --model c:/tools/llama-models/gemma-4-E4B-it-Q4_K_S.gguf
+// npx @modelcontextprotocol/inspector
+// /c npx -y @modelcontextprotocol/server-filesystem c:/tools/distri

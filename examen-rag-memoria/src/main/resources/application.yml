@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: examen-rag-memoria
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      base-url: ${OPENAI_BASE_URL:https://api.groq.com/openai}
+      chat:
+        options:
+          model: ${OPENAI_MODEL:llama-3.1-8b-instant}
+    embedding:
+      transformer:
+        onnx:
+          model-uri: classpath:models/model.onnx
+        tokenizer:
+          uri: classpath:models/tokenizer.json
+    vectorstore:
+      qdrant:
+        host: localhost
+        port: 6334
+        collection-name: examen_rag
+        initialize-schema: true
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+  docker:
+    compose:
+      enabled: true

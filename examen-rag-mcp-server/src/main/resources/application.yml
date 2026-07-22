@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: examen-rag-mcp-server
+  main:
+    web-application-type: none
+    banner-mode: off
+  ai:
+    mcp:
+      server:
+        name: examen-rag-tools
+        version: 1.0.0
+        stdio: true
+    embedding:
+      transformer:
+        onnx:
+          model-uri: classpath:models/model.onnx
+        tokenizer:
+          uri: classpath:models/tokenizer.json
+    vectorstore:
+      qdrant:
+        host: localhost
+        port: 6334
+        collection-name: examen_rag
+        initialize-schema: false
+
+logging:
+  pattern:
+    console: ""
+  level:
+    root: OFF

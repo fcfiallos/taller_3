@@ -1,0 +1,37 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: 16.sprong-correccion
+  docker:
+    compose:
+      enabled: true
+      file: 16.sprong-correccion/docker-compose.yml
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  ai:
+    model:
+      embedding: transformers
+    embedding:
+      transformer:
+        onnx:
+          model-uri: classpath:models/model.onnx
+        tokenizer:
+          uri: classpath:models/tokenizer.json
+    vectorstore:
+      qdrant:
+        collection-name: examen_rag
+        initialize-schema: true
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      base-url: ${OPENAI_BASE_URL}
+      chat:
+        model: ${OPENAI_MODEL}
+
+logging:
+  level:
+    org.springframework.ai.chat.client: INFO
+    com.programacion.solucion: INFO

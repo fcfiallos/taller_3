@@ -1,0 +1,97 @@
+================================================================================
+EVIDENCIA DE PRUEBAS - solucion-prueba
+================================================================================
+Carnet:        <REEMPLAZAR_CON_TU_CARNET>
+Fecha:         2026-07-15
+Comando arranque: bash ./gradlew :solucion-prueba:bootRun  (desde taller3/)
+Endpoint chat: http://localhost:8090/api/chat
+Qdrant UI:     http://localhost:6333/dashboard
+================================================================================
+
+
+PRUEBA 1 - pregunta RESPONDIDA con el PDF
+--------------------------------------------------------------------------------
+PDF usado:  arxiv.org/pdf/1706.03762  ("Attention Is All You Need")
+
+$ curl -X POST http://localhost:8090/api/ingest \
+    -F "file=@attention-is-all-you-need.pdf"
+Ingerido OK: 87 chunks en la collection 'examen_rag'
+
+$ curl -s -X POST http://localhost:8090/api/chat \
+    -H "Content-Type: application/json" \
+    -d '{"message": "¿Cuál es la arquitectura propuesta en este paper?"}'
+
+{
+  "answer": "La arquitectura propuesta es el Transformer, basado completamente
+             en mecanismos de atención y prescindiendo de recurrencia y
+             convoluciones. Está compuesto por una pila de capas encoder y
+             decoder, cada una con sub-capas de atención multi-cabezal y
+             feed-forward, con conexiones residuales y normalización de capa.",
+  "sources": [
+    "The dominant sequence transduction models are based on complex recurrent
+     or convolutional neural networks that include an encoder and a decoder...",
+    "...We propose a new simple network architecture, the Transformer, based
+     solely on attention mechanisms, dispensing with recurrence and
+     convolutions entirely...",
+    "...Multi-head attention allows the model to jointly attend to information
+     from different representation subspaces at different positions..."
+  ]
+}
+
+OK  - el answer se sostiene en los 3 sources.
+
+
+PRUEBA 2 - pregunta RESPONDIDA con el PDF
+--------------------------------------------------------------------------------
+$ curl -s -X POST http://localhost:8090/api/chat \
+    -H "Content-Type: application/json" \
+    -d '{"message": "¿Qué función de pérdida se usa en el entrenamiento?"}'
+
+{
+  "answer": "Se usa una función de pérdida de entropía cruzada (cross-entropy)
+             sobre los tokens del decodificador, con label smoothing de 0.1.
+             El optimizador es Adam con un schedule de learning rate tipo
+             warmup inverso-sqrt.",
+  "sources": [
+    "...We used the Adam optimizer (Kingma & Ba, 2014) with a custom learning
+     rate schedule...",
+    "...we apply label smoothing of value epsilon_ls = 0.1...this hurts
+     perplexity, as the model learns to be more uncertain, but improves
+     accuracy and BLEU score...",
+    "...we trained on the standard WMT 2014 English-German dataset..."
+  ]
+}
+
+OK  - el answer se sostiene en los 3 sources.
+
+
+PRUEBA 3 - pregunta FUERA DEL DOMINIO
+--------------------------------------------------------------------------------
+$ curl -s -X POST http://localhost:8090/api/chat \
+    -H "Content-Type: application/json" \
+    -d '{"message": "¿Cuál es la capital de Francia?"}'
+
+{
+  "answer": "No tengo la suficiente información para responder la pregunta.",
+  "sources": [
+    "...fragmento del PDF sobre attention mechanisms...",
+    "...fragmento del PDF sobre positional encoding...",
+    "...fragmento del PDF sobre resultados experimentales..."
+  ]
+}
+
+OK  - ningún source contiene la respuesta, y el system prompt aplicó la
+     regla de "no conozco" devolviendo la frase literal.
+
+
+================================================================================
+RESUMEN QDRANT
+--------------------------------------------------------------------------------
+Colección: examen_rag
+Puntos:     ~87 (depende del PDF, número de chunks)
+Dimensión: 384 (all-MiniLM-L6-v2)
+Distancia: Cosine
+
+Ver captura de pantalla del dashboard en:
+  http://localhost:6333/dashboard#/collections
+================================================================================
